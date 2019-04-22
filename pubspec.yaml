@@ -1,8 +1,8 @@
 name: flutter_html
-description: A Flutter widget for rendering static html tags as Flutter widgets. (Will render over 70 different html tags!)
+description: A Flutter widget for rendering static html tags as Flutter widgets with image caching support. (Will render over 70 different html tags!)
 version: 0.9.6
-author: Matthew Whitaker <sub6resources@gmail.com>
-homepage: https://github.com/Sub6Resources/flutter_html
+author: Dominic Orga <dominicorga@gmail.com>
+homepage: https://github.com/DominicOrga/flutter_html
 
 environment:
   sdk: '>=1.19.0 <3.0.0'
@@ -12,6 +12,10 @@ dependencies:
   html: ^0.13.3
   flutter:
     sdk: flutter
+
+  url_launcher: ^5.0.2
+  cached_network_image: ^0.7.0
+  flutter_cache_manager: ^0.3.2
 
 dev_dependencies:
   flutter_test:

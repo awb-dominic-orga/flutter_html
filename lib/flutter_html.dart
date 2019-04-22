@@ -1,12 +1,14 @@
 library flutter_html;
 
-import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_html/html_parser.dart';
+import 'package:flutter/material.dart';
 
 class Html extends StatelessWidget {
   Html({
     Key key,
     @required this.data,
+    this.cacheManager,
     this.padding,
     this.backgroundColor,
     this.defaultTextStyle,
@@ -21,6 +23,8 @@ class Html extends StatelessWidget {
         decorationColor: Colors.blueAccent),
   }) : super(key: key);
 
+
+  final BaseCacheManager cacheManager;
   final String data;
   final EdgeInsetsGeometry padding;
   final Color backgroundColor;
@@ -47,21 +51,23 @@ class Html extends StatelessWidget {
         style: defaultTextStyle ?? DefaultTextStyle.of(context).style,
         child: (useRichText)
             ? HtmlRichTextParser(
-                width: width,
-                onLinkTap: onLinkTap,
-                renderNewlines: renderNewlines,
-                html: data,
-                linkStyle: linkStyle,
-              )
+          width: width,
+          onLinkTap: onLinkTap,
+          renderNewlines: renderNewlines,
+          html: data,
+          cacheManager: cacheManager,
+          linkStyle: linkStyle,
+        )
             : HtmlOldParser(
-                width: width,
-                onLinkTap: onLinkTap,
-                renderNewlines: renderNewlines,
-                customRender: customRender,
-                html: data,
-                blockSpacing: blockSpacing,
-                linkStyle: linkStyle,
-              ),
+          width: width,
+          onLinkTap: onLinkTap,
+          renderNewlines: renderNewlines,
+          customRender: customRender,
+          html: data,
+          cacheManager: cacheManager,
+          blockSpacing: blockSpacing,
+          linkStyle: linkStyle,
+        ),
       ),
     );
   }
