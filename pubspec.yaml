@@ -12,7 +12,6 @@ dependencies:
   html: ^0.13.3
   flutter:
     sdk: flutter
-
   url_launcher: ^5.0.2
   cached_network_image: ^0.7.0
   flutter_cache_manager: ^0.3.2

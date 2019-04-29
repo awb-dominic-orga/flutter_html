@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart' as dom;
+import 'package:chewie/chewie.dart';
+import 'package:video_player/video_player.dart';
 
 typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
 typedef OnLinkTap = void Function(String url);
@@ -234,6 +236,7 @@ class HtmlRichTextParser extends StatelessWidget {
     "p",
     "pre",
     "section",
+    "video"
   ];
 
   static List get _supportedElements => List<dynamic>()
@@ -647,9 +650,6 @@ class HtmlRichTextParser extends StatelessWidget {
                   ),
                 )
                 );
-
-//                parseContext.rootWidgetList
-//                    .add(Image.network(node.attributes['src']));
               }
             } else if (node.attributes['alt'] != null) {
               parseContext.rootWidgetList.add(BlockText(
@@ -728,6 +728,13 @@ class HtmlRichTextParser extends StatelessWidget {
             // no break here
             continue myDefault;
 
+          case "video":
+            if (node.attributes['src'] != null) {
+              String url = node.attributes['src'];
+              parseContext.rootWidgetList.add(VideoPlayer(url));
+            }
+            break;
+
           myDefault:
           default:
             Decoration decoration;
@@ -792,6 +799,7 @@ class HtmlRichTextParser extends StatelessWidget {
   //     );
   //   }).toList();
   // }
+
 
   Paint _getPaint(Color color) {
     Paint paint = new Paint();
@@ -930,6 +938,7 @@ class HtmlOldParser extends StatelessWidget {
     "u",
     "ul", //partial
     "var",
+    "video"
   ];
 
   @override
@@ -1690,6 +1699,11 @@ class HtmlOldParser extends StatelessWidget {
               fontStyle: FontStyle.italic,
             ),
           );
+        case "video":
+          if (node.attributes['src'] != null) {
+            String url = node.attributes['src'];
+            return VideoPlayer(url);
+          }
       }
     } else if (node is dom.Text) {
       //We don't need to worry about rendering extra whitespace
@@ -1752,5 +1766,47 @@ class HtmlOldParser extends StatelessWidget {
       }
     }
     return false;
+  }
+}
+
+class VideoPlayer extends StatefulWidget {
+
+  String _url;
+
+  VideoPlayer(_url);
+
+  @override
+  State createState() => VideoPlayerState(_url);
+}
+
+class VideoPlayerState extends State<VideoPlayer> {
+
+  VideoPlayerController _videoPlayerController;
+  ChewieController _chewieController;
+  String _url;
+
+  VideoPlayerState(_url);
+  
+  @override
+  void initState() {
+    _videoPlayerController = VideoPlayerController.network(_url);
+
+    _chewieController = ChewieController(
+      videoPlayerController: _videoPlayerController,
+//      aspectRatio: 3 / 2,
+//      autoPlay: true,
+      looping: true,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Chewie(controller: _chewieController,);
+  }
+
+  @override
+  void dispose() {
+    _videoPlayerController.dispose();
+    _chewieController.dispose();
   }
 }
