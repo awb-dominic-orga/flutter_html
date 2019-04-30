@@ -732,9 +732,11 @@ class HtmlRichTextParser extends StatelessWidget {
           case "yt":
             if (node.attributes['src'] != null) {
               String url = node.attributes['src'];
+              String videoId = YoutubePlayer.convertUrlToId(url);
+
               parseContext.rootWidgetList.add(YoutubePlayer(
                 context: _context,
-                videoId: "iLnmTe5Q2Qw",
+                videoId: videoId,
                 autoPlay: false,
               ));
             }
@@ -1711,9 +1713,11 @@ class HtmlOldParser extends StatelessWidget {
         case "yt":
           if (node.attributes['src'] != null) {
             String url = node.attributes['src'];
+            String videoId = YoutubePlayer.convertUrlToId(url);
+
             return YoutubePlayer(
               context: _context,
-              videoId: "iLnmTe5Q2Qw",
+              videoId: videoId,
               autoPlay: false,
             );
           }
