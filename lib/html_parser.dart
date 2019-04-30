@@ -1,15 +1,14 @@
 import 'dart:convert';
 
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart' as dom;
-import 'package:chewie/chewie.dart';
 import 'package:video_player/video_player.dart';
 
 typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
@@ -731,7 +730,7 @@ class HtmlRichTextParser extends StatelessWidget {
           case "video":
             if (node.attributes['src'] != null) {
               String url = node.attributes['src'];
-              parseContext.rootWidgetList.add(VideoPlayer(url));
+              parseContext.rootWidgetList.add(ChewiePlayer(url));
             }
             break;
 
@@ -1702,7 +1701,7 @@ class HtmlOldParser extends StatelessWidget {
         case "video":
           if (node.attributes['src'] != null) {
             String url = node.attributes['src'];
-            return VideoPlayer(url);
+            return ChewiePlayer(url);
           }
       }
     } else if (node is dom.Text) {
@@ -1769,44 +1768,39 @@ class HtmlOldParser extends StatelessWidget {
   }
 }
 
-class VideoPlayer extends StatefulWidget {
-
+class ChewiePlayer extends StatefulWidget {
   String _url;
 
-  VideoPlayer(_url);
+  ChewiePlayer(this._url);
 
   @override
-  State createState() => VideoPlayerState(_url);
+  State<StatefulWidget> createState() => _ChewiePlayerState(_url);
 }
 
-class VideoPlayerState extends State<VideoPlayer> {
-
+class _ChewiePlayerState extends State<ChewiePlayer> {
   VideoPlayerController _videoPlayerController;
   ChewieController _chewieController;
   String _url;
 
-  VideoPlayerState(_url);
-  
-  @override
-  void initState() {
-    _videoPlayerController = VideoPlayerController.network(_url);
-
-    _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController,
-//      aspectRatio: 3 / 2,
-//      autoPlay: true,
-      looping: true,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Chewie(controller: _chewieController,);
-  }
+  _ChewiePlayerState(this._url);
 
   @override
   void dispose() {
     _videoPlayerController.dispose();
     _chewieController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _videoPlayerController = VideoPlayerController.network(_url);
+
+    _chewieController = ChewieController(
+      videoPlayerController: _videoPlayerController,
+      aspectRatio: 3 / 2,
+      looping: true,
+    );
+
+    return Chewie(controller: _chewieController,);
   }
 }
