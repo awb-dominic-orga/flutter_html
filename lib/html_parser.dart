@@ -3,13 +3,12 @@ import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chewie/chewie.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart' as dom;
-import 'package:video_player/video_player.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
 typedef OnLinkTap = void Function(String url);
@@ -235,8 +234,10 @@ class HtmlRichTextParser extends StatelessWidget {
     "p",
     "pre",
     "section",
-    "video"
+    "yt"
   ];
+
+  BuildContext _context;
 
   static List get _supportedElements => List<dynamic>()
     ..addAll(_supportedStyleElements)
@@ -263,6 +264,7 @@ class HtmlRichTextParser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _context = context;
     String data = html;
 
     if (renderNewlines) {
@@ -727,10 +729,14 @@ class HtmlRichTextParser extends StatelessWidget {
             // no break here
             continue myDefault;
 
-          case "video":
+          case "yt":
             if (node.attributes['src'] != null) {
               String url = node.attributes['src'];
-              parseContext.rootWidgetList.add(ChewiePlayer(url));
+              parseContext.rootWidgetList.add(YoutubePlayer(
+                context: _context,
+                videoId: "iLnmTe5Q2Qw",
+                autoPlay: false,
+              ));
             }
             break;
 
@@ -937,11 +943,15 @@ class HtmlOldParser extends StatelessWidget {
     "u",
     "ul", //partial
     "var",
-    "video"
+    "yt"
   ];
+
+  BuildContext _context;
 
   @override
   Widget build(BuildContext context) {
+    _context = context;
+
     return Wrap(
       alignment: WrapAlignment.start,
       children: parse(html),
@@ -1698,10 +1708,14 @@ class HtmlOldParser extends StatelessWidget {
               fontStyle: FontStyle.italic,
             ),
           );
-        case "video":
+        case "yt":
           if (node.attributes['src'] != null) {
             String url = node.attributes['src'];
-            return ChewiePlayer(url);
+            return YoutubePlayer(
+              context: _context,
+              videoId: "iLnmTe5Q2Qw",
+              autoPlay: false,
+            );
           }
       }
     } else if (node is dom.Text) {
@@ -1765,42 +1779,5 @@ class HtmlOldParser extends StatelessWidget {
       }
     }
     return false;
-  }
-}
-
-class ChewiePlayer extends StatefulWidget {
-  String _url;
-
-  ChewiePlayer(this._url);
-
-  @override
-  State<StatefulWidget> createState() => _ChewiePlayerState(_url);
-}
-
-class _ChewiePlayerState extends State<ChewiePlayer> {
-  VideoPlayerController _videoPlayerController;
-  ChewieController _chewieController;
-  String _url;
-
-  _ChewiePlayerState(this._url);
-
-  @override
-  void dispose() {
-    _videoPlayerController.dispose();
-    _chewieController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    _videoPlayerController = VideoPlayerController.network(_url);
-
-    _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController,
-      aspectRatio: 3 / 2,
-      looping: true,
-    );
-
-    return Chewie(controller: _chewieController,);
   }
 }
